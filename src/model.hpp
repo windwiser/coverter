@@ -4,10 +4,14 @@
 
 class Model
 {
+    // Must set be high enough so emission period can't "starve" the slowest arriving update (wind speed)
+    static constexpr uint8_t COUNTDOWN_START_VALUE = 2;
+
   public:
     void setWindSpeed(uint16_t cms) {
-        wind_speed_cms = cms;
-        speed_is_set   = true;
+        // ~ 1 Hz update
+        wind_speed_cms         = cms;
+        speed_update_countdown = COUNTDOWN_START_VALUE;
     }
 
     uint16_t getWindSpeedCms() {
@@ -15,8 +19,9 @@ class Model
     }
 
     void setWindAngle(int16_t degrees) {
-        wind_angle_degrees = degrees;
-        angle_is_set       = true;
+        // 5 Hz update
+        wind_angle_degrees    = degrees;
+        wind_update_countdown = COUNTDOWN_START_VALUE;
     }
 
     int16_t getWindAngleDegrees() {
@@ -24,11 +29,11 @@ class Model
     }
 
     bool evaluateUpdateFlag() {
-        bool is_updated = speed_is_set && angle_is_set;
+        bool is_updated = (speed_update_countdown > 0) && (wind_update_countdown > 0);
 
         if (is_updated) {
-            speed_is_set = false;
-            angle_is_set = false;
+            speed_update_countdown--;
+            wind_update_countdown--;
         }
 
         return is_updated;
@@ -38,8 +43,8 @@ class Model
     uint16_t wind_speed_cms;
     int16_t  wind_angle_degrees;
 
-    bool speed_is_set = false;
-    bool angle_is_set = false;
+    uint8_t speed_update_countdown = 0;
+    uint8_t wind_update_countdown  = 0;
 };
 
 Model model;

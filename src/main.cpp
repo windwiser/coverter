@@ -9,7 +9,7 @@
 #include "model.hpp"
 #include "systick.hpp"
 
-static constexpr uint32_t EMISSION_PERIOD_MS = 1000;
+static constexpr uint32_t EMISSION_PERIOD_MS = 900;
 static constexpr uint32_t PHASE_SHIFT        = 50;
 
 uint32_t phase_of_emission = 0;
