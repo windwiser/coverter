@@ -14,9 +14,8 @@ void USART_Init(unsigned baud) {
 
     UCSRA |= 1 << U2X;
 
-    // Enable USART receiver and transmitter and receive complete interrupt
-    //    UCSRB = (1 << RXCIE) | (1 << RXEN) | (1 << TXEN);
-    UCSRB = (1 << TXEN); // | (1 << TXCIE);
+    // Enable USART transmitter
+    UCSRB = (1 << TXEN);
 
     // Set frame format: asynchronous, 8bit data, odd parity, 1stop bit
     UCSRC = (1 << URSEL) | (0b11 << UPM0) | (0b11 << UCSZ0);
