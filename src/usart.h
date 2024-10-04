@@ -14,18 +14,18 @@ void USART_Init(unsigned baud) {
 
     UCSRA |= 1 << U2X;
 
-    // Enable USART transmitter
-    UCSRB = (1 << TXEN);
+    // Enable USART transmitter, 9bit data
+    UCSRB = (1 << TXEN) | (1 << UCSZ2);
 
-    // Set frame format: asynchronous, 8bit data, odd parity, 1stop bit
-    UCSRC = (1 << URSEL) | (0b11 << UPM0) | (0b11 << UCSZ0);
+    // Set frame format: asynchronous, 9bit data, no parity, 1stop bit
+    UCSRC = (1 << UCSZ1) | (1 << UCSZ0) | (1 << URSEL);
 }
 
 void USART_SendBlocking(const void* ptr, uint8_t len) {
     if (!len)
         return;
 
-    const char* ptr_ = (const char*)ptr;
+    const uint16_t* ptr_ = (const uint16_t*)ptr;
 
     while (len--) {
         // Wait for empty transmit buffer
@@ -33,6 +33,13 @@ void USART_SendBlocking(const void* ptr, uint8_t len) {
             ;
 
         // send
+
+        if ((*ptr_ & 0x100) != 0) {
+            UCSRB |= (1 << TXB8);
+        } else {
+            UCSRB &= ~(1 << TXB8);
+        }
+
         UDR = *ptr_++;
     }
 }
