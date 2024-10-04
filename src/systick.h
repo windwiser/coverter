@@ -10,6 +10,7 @@ uint16_t systick_counter_1hz;
 bool     systick_flag_1hz;
 uint16_t systick_counter_10hz;
 bool     systick_flag_10hz;
+uint32_t systick_cntr = 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -39,8 +40,13 @@ bool systick_10hz() {
     return copy;
 }
 
+uint32_t systick_get_ms() {
+    return systick_cntr;
+}
+
 ISR(TIMER2_COMP_vect) {
     TCNT2 = 0;
+    systick_cntr++;
 
     if (++systick_counter_1hz == 1000) {
         systick_flag_1hz    = true;

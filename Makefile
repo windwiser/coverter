@@ -43,6 +43,7 @@ ${DIR_OUTPUT}:
 	mkdir -p $@
 
 ${DIR_BIN}/%.o: ${DIR_SRC}/%.cpp Makefile | ${DIR_BIN}
+	@mkdir -p $(dir $@)
 	avr-gcc ${C_FLAGS}  $< -o $@
 
 ${OUTPUT_FILE_PATH}: ${OBJECTS} | ${DIR_OUTPUT}
