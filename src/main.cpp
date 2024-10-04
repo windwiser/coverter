@@ -4,7 +4,7 @@
 #include <avr/wdt.h>
 #include <util/delay.h>
 
-#include "arduino-mcp2515/mcp2515.h"
+#include "can_data.hpp"
 #include "fastnet.hpp"
 #include "model.hpp"
 #include "systick.hpp"
@@ -43,48 +43,20 @@ void packet_emission_update() {
     }
 }
 
-struct can_frame canMsg;
-MCP2515          mcp2515;
-
-namespace Id {
-constexpr uint32_t WindSpeed = 0x000000A0;
-constexpr uint32_t WindAngle = 0x000000A2;
-} // namespace Id
-
 int main() {
 
     systick_init();
     USART_Init(10560);
+    can_data_init();
 
     set_sleep_mode(SLEEP_MODE_IDLE);
     wdt_enable(WDTO_2S);
     sei();
 
-    mcp2515.reset();
-    mcp2515.setBitrate(CAN_125KBPS);
-    mcp2515.setNormalMode();
-
     while (1) {
-        if (mcp2515.readMessage(&canMsg) == MCP2515::ERROR_OK) {
-            switch (canMsg.can_id & CAN_EFF_MASK) {
-            case Id::WindSpeed:
-                if (canMsg.can_dlc >= 3) {
-                    uint16_t wind_speed_cms = (canMsg.data[1] << 8) | canMsg.data[2];
-                    model.setWindSpeed(wind_speed_cms);
-                }
-                break;
-            case Id::WindAngle:
-                if (canMsg.can_dlc >= 3) {
-                    int16_t wind_angle_deg = (canMsg.data[1] << 8) | canMsg.data[2];
-                    model.setWindAngle(wind_angle_deg);
-                }
-                break;
-            default:
-                break;
-            }
-        }
-
+        can_data_update();
         packet_emission_update();
+
         wdt_reset();
     }
 
