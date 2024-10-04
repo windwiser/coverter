@@ -15,17 +15,18 @@ static constexpr uint32_t PHASE_SHIFT        = 50;
 uint32_t phase_of_emission = 0;
 uint32_t p_last_emission   = 0;
 
-void packet_emission_shift_phase() { // TODO rename
-    auto new_phase = phase_of_emission;
-    new_phase += PHASE_SHIFT;
-
-    if (new_phase > EMISSION_PERIOD_MS) {
-        p_last_emission++;
-        new_phase -= EMISSION_PERIOD_MS;
-    }
-
-    phase_of_emission = new_phase;
-}
+// can be used for collision detection
+// void packet_emission_shift_phase() {
+//     auto new_phase = phase_of_emission;
+//     new_phase += PHASE_SHIFT;
+//
+//     if (new_phase > EMISSION_PERIOD_MS) {
+//         p_last_emission++;
+//         new_phase -= EMISSION_PERIOD_MS;
+//     }
+//
+//     phase_of_emission = new_phase;
+// }
 
 void packet_emission_update() {
     uint32_t now    = systick_get_ms();
