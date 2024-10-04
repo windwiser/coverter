@@ -1,7 +1,7 @@
 #include "mcp2515.h"
 
 #include "../spi.hpp"
-extern uint32_t systick_get_ms(); // can't include "../systick.h" to prevent double definition
+#include "../systick.hpp"
 
 #include <string.h>
 
@@ -14,10 +14,16 @@ const struct MCP2515::RXBn_REGS MCP2515::RXB[N_RXBUFFERS] = {
     { MCP_RXB1CTRL, MCP_RXB1SIDH, MCP_RXB1DATA, CANINTF_RX1IF }
 };
 
-MCP2515::MCP2515() {}
+MCP2515::MCP2515() {
+    // Rst pin of MCP2515!
+    DDRD |= (1 << 3);
+    PORTD |= (1 << 3);
+
+    spi_init();
+}
 
 void MCP2515::startSPI() {
-    spi_enable(MCP_ID);
+    spi_enable();
 }
 
 void MCP2515::endSPI() {

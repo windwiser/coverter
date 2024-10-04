@@ -1,4 +1,4 @@
-#pragma once
+#include "systick.hpp"
 
 #include <avr/interrupt.h>
 
