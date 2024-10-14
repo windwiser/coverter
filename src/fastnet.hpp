@@ -11,7 +11,7 @@ uint8_t checksum(const uint8_t* ptr, uint8_t len) {
 }
 
 void sendWindData() {
-    constexpr uint8_t FRAME_LENGTH = 14;
+    constexpr uint8_t FRAME_LENGTH = 18;
 
     uint8_t frame[FRAME_LENGTH];
 
@@ -21,12 +21,11 @@ void sendWindData() {
     frame[3] = 0x01;             // data command
     frame[4] = checksum(frame, 4);
 
-    // cm/s is already a multiplier of 100
-    uint16_t wind_speed_100_knots = model.getWindSpeedCms() * 1.943844;
-    frame[5]                      = 0x4E;                      // wind speed
-    frame[6]                      = 0x88;                      // format
-    frame[7]                      = wind_speed_100_knots >> 8; // wind speed
-    frame[8]                      = wind_speed_100_knots;      // wind speed
+    // static wind speed, needed for autopilot
+    frame[5] = 0x4E;
+    frame[6] = 0x88;
+    frame[7] = 0x03;
+    frame[8] = 0x45;
 
     int16_t wind_angle = model.getWindAngleDegrees();
     frame[9]           = 0x51;
@@ -34,9 +33,15 @@ void sendWindData() {
     frame[11]          = wind_angle >> 8; // wind angle
     frame[12]          = wind_angle;      // wind angle
 
+    // raw wind pulses, needed for autopilot
+    frame[13] = 0x52;
+    frame[14] = 0x08;
+    frame[15] = 0x4E;
+    frame[16] = 0x34;
+
     // !! ATTENTION !!
     // contrary to the docs, the last chx must round up to 0xAA rather than 0x100
-    frame[13] = checksum(frame + 5, FRAME_LENGTH - 6) + 0xAA;
+    frame[FRAME_LENGTH - 1] = checksum(frame + 5, FRAME_LENGTH - 6) + 0xAA;
 
     USART_SendBlocking(frame, FRAME_LENGTH);
 }
