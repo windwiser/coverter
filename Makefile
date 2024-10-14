@@ -55,7 +55,7 @@ ${OUTPUT_FILE_PATH}: ${OBJECTS} | ${DIR_OUTPUT}
 	avr-objdump -h -S "${DIR_BUILD}/main.elf" > "${DIR_BUILD}/main.lss"
 	avr-objcopy -O srec -R .eeprom -R .fuse -R .lock -R .signature  "${DIR_BUILD}/main.elf" "${DIR_BUILD}/main.srec"
 	avr-size "${DIR_BUILD}/main.elf"
-	cp ${DIR_BUILD}/main.hex ${DIR_OUTPUT}/icicle-${GIT_DESCRIBE}.hex
+	cp ${DIR_BUILD}/main.hex ${DIR_OUTPUT}/fastnet-${GIT_DESCRIBE}.hex
 	@echo
 	@echo "Version: ${GIT_DESCRIBE}"
 
