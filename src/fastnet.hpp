@@ -22,7 +22,7 @@ void sendWindData() {
     frame[4] = checksum(frame, 4);
 
     // cm/s is already a multiplier of 100
-    uint16_t wind_speed_100_knots = 0;                         // model.getWindSpeedCms() * 1.943844;
+    uint16_t wind_speed_100_knots = model.getWindSpeedCms() * 1.943844;
     frame[5]                      = 0x4E;                      // wind speed
     frame[6]                      = 0x88;                      // format
     frame[7]                      = wind_speed_100_knots >> 8; // wind speed
